@@ -38,7 +38,7 @@ module.exports = class TCPServer {
           this.removeTcpShell(socket.id);
         });
       })
-      .listen(port, "127.0.0.1");
+      .listen(port);
 
     console.log(`TCP Socket: ${port}`);
   }
