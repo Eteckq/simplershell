@@ -11,8 +11,6 @@ RUN apk update && apk upgrade
 COPY . /usr/app/
 RUN npm install
 
-RUN npm run build
-
 ENV NODE_ENV production
 # start the app
 CMD [ "npm", "run", "start" ]
