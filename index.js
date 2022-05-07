@@ -15,7 +15,7 @@ const io = new Server(httpServer, {
   /* options */
 });
 
-var tcpServer = null
+var tcpServer = new TCPServer(portTCP, io)
 
 // WEBSITE
 

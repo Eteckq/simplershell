@@ -2,11 +2,9 @@ const net = require("net");
 const uuid = require("uuid");
 
 module.exports = class TCPServer {
-  
-
   constructor(port, io) {
     this.shells = [];
-    this.io = io
+    this.io = io;
 
     this.server = net
       .createServer((socket) => {
@@ -49,6 +47,7 @@ module.exports = class TCPServer {
 
   // New reverse shell
   addTcpShell(socket) {
+    console.log("New shell", socket.id);
     this.shells.push(socket);
     this.io.emit("shells", this.getSendableShells());
   }
@@ -61,7 +60,7 @@ module.exports = class TCPServer {
 
   // User force delete
   deleteTcpShell(id) {
-    let shell = this.shells.find((s) => s.id == id).destroy()
+    let shell = this.shells.find((s) => s.id == id).destroy();
   }
 
   getSendableShells() {
@@ -70,8 +69,8 @@ module.exports = class TCPServer {
     });
   }
 
-  destroy(){
-    this.shells.map(s => this.deleteTcpShell(s.id))
-    this.server.close()
+  destroy() {
+    this.shells.map((s) => this.deleteTcpShell(s.id));
+    this.server.close();
   }
 };
