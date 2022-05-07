@@ -39,13 +39,15 @@ io.on("connection", (socket) => {
     tcpServer.deleteTcpShell(id)
   })
   socket.on('state', state => {
-    if(state){
-      tcpServer = new TCPServer(portTCP, io);
-    } else {
-      tcpServer.destroy()
-      tcpServer = null
-    }
-    io.emit("state", !!tcpServer);
+    setTimeout(() => {
+      if(!tcpServer){
+        tcpServer = new TCPServer(portTCP, io);
+      } else {
+        tcpServer.destroy()
+        tcpServer = null
+      }
+      io.emit("state", !!tcpServer);
+    }, 1000);
   })
   if (tcpServer) {
     socket.emit("state", true);
