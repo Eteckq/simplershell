@@ -39,7 +39,6 @@ io.on("connection", (socket) => {
     tcpServer.deleteTcpShell(id)
   })
   socket.on('state', state => {
-    setTimeout(() => {
       if(!tcpServer){
         tcpServer = new TCPServer(portTCP, io);
       } else {
@@ -47,7 +46,6 @@ io.on("connection", (socket) => {
         tcpServer = null
       }
       io.emit("state", !!tcpServer);
-    }, 1000);
   })
   if (tcpServer) {
     socket.emit("state", true);
