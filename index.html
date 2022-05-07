@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reverse Shell Online</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    const socket = io();
+    socket.on('shells', shells => {
+        updateShellList(shells)
+    })
+    socket.on('state', state => {
+        $('#switch').prop('disabled', false);
+        $('#switch').prop('checked', state);
+    })
+
+    function updateShellList (shells) {
+        $('#shellList').empty()
+        for (const shell of shells) {
+            $('#shellList').append(`
+                <li><a href="${shell.id}">Shell #${shell.id}</a><p onclick="removeShell('${shell.id}')">Delete</p></li>
+            `)
+        }
+
+    }
+
+    function removeShell (id) {
+        socket.emit('delete', id)
+    }
+
+
+    $(() => {
+        $('#switch').change(function () {
+            socket.emit('state', $('#switch').is(":checked"))
+        })
+    })
+
+
+</script>
+
+<style>
+    /* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+    html,
+    body,
+    div,
+    span,
+    applet,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    a,
+    abbr,
+    acronym,
+    address,
+    big,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    s,
+    samp,
+    small,
+    strike,
+    strong,
+    sub,
+    sup,
+    tt,
+    var,
+    b,
+    u,
+    i,
+    center,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    aside,
+    canvas,
+    details,
+    embed,
+    figure,
+    figcaption,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    output,
+    ruby,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        margin: 0px;
+        padding: 1px;
+        border: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+    }
+
+    * {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+        line-height: 1;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    blockquote,
+    q {
+        quotes: none;
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: '';
+        content: none;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    input[type=checkbox] {
+        height: 0;
+        width: 0;
+        visibility: hidden;
+    }
+
+    label {
+        cursor: pointer;
+        text-indent: -9999px;
+        width: 200px;
+        height: 70px;
+        background: rgb(255, 76, 76);
+        display: block;
+        border-radius: 100px;
+        position: relative;
+    }
+
+    label:after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: 60px;
+        height: 60px;
+        background: #fff;
+        border-radius: 60px;
+        transition: 0.3s;
+    }
+
+    input:checked+label {
+        background: #bada55;
+    }
+
+    input:checked+label:after {
+        left: calc(100% - 5px);
+        transform: translateX(-100%);
+    }
+
+    label:active:after {
+        width: 130px;
+    }
+
+    body {
+        height: 100vh;
+        background-color: rgb(19, 19, 19);
+    }
+
+    #top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 200px;
+        color: rgb(255, 241, 116);
+        font-size: larger;
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+    }
+
+    #shellList li {
+        display: flex;
+        justify-content: center;
+    }
+
+    #shellList li a {
+        background-color: #bada55;
+        padding: 8px;
+        border-radius: 3px;
+        color: rgb(0, 0, 0);
+        cursor: pointer;
+    }
+
+    #shellList li p {
+        background-color: #ff2a2a;
+        padding: 8px;
+        border-radius: 3px;
+        color: rgb(0, 0, 0);
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit
+    }
+</style>
+
+<body>
+    <div id="top">
+        <p style="width: 250px; text-align: center">54.36.189.124</p>
+        <!-- Toggle -->
+        <div>
+            <input type="checkbox" id="switch" disabled /><label for="switch">On</label>
+        </div>
+        <p style="width: 250px; text-align: center;">6666</p>
+    </div>
+    <!-- Shell list -->
+    <ul id="shellList">
+
+    </ul>
+</body>
+
+</html>

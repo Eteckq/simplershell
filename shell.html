@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reverse Shell Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.18.0/lib/xterm.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/xterm@4.18.0/css/xterm.css" rel="stylesheet">
+
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const MINIMUM_COLS = 2;
+    const MINIMUM_ROWS = 1;
+
+    class FitAddon {
+        _terminal;
+
+        constructor() { }
+
+        activate (terminal) {
+            this._terminal = terminal;
+        }
+
+        dispose () { }
+
+        fit () {
+            const dims = this.proposeDimensions();
+            if (!dims || !this._terminal || isNaN(dims.cols) || isNaN(dims.rows)) {
+                return;
+            }
+
+            const core = (this._terminal)._core;
+
+            // Force a full render
+            if (this._terminal.rows !== dims.rows || this._terminal.cols !== dims.cols) {
+                core._renderService.clear();
+                this._terminal.resize(dims.cols, dims.rows);
+            }
+        }
+
+        proposeDimensions () {
+            if (!this._terminal) {
+                return undefined;
+            }
+
+            if (!this._terminal.element || !this._terminal.element.parentElement) {
+                return undefined;
+            }
+
+            const core = (this._terminal)._core;
+
+            if (core._renderService.dimensions.actualCellWidth === 0 || core._renderService.dimensions.actualCellHeight === 0) {
+                return undefined;
+            }
+
+            const parentElementStyle = window.getComputedStyle(this._terminal.element.parentElement);
+            let parentElementHeight = parseInt(parentElementStyle.getPropertyValue('height'));
+            const parentElementWidth = Math.max(0, parseInt(parentElementStyle.getPropertyValue('width')));
+            const elementStyle = window.getComputedStyle(this._terminal.element);
+            const elementPadding = {
+                top: parseInt(elementStyle.getPropertyValue('padding-top')),
+                bottom: parseInt(elementStyle.getPropertyValue('padding-bottom')),
+                right: parseInt(elementStyle.getPropertyValue('padding-right')),
+                left: parseInt(elementStyle.getPropertyValue('padding-left'))
+            };
+            const elementPaddingVer = elementPadding.top + elementPadding.bottom;
+            const elementPaddingHor = elementPadding.right + elementPadding.left;
+            const availableHeight = parentElementHeight - elementPaddingVer;
+            const availableWidth = parentElementWidth - elementPaddingHor - core.viewport.scrollBarWidth;
+            const geometry = {
+                cols: Math.max(MINIMUM_COLS, Math.floor(availableWidth / core._renderService.dimensions.actualCellWidth)),
+                rows: Math.max(MINIMUM_ROWS, Math.floor(availableHeight / core._renderService.dimensions.actualCellHeight))
+            };
+            return geometry;
+        }
+    }
+
+
+    const id = window.location.pathname.split('/')[1];
+    const socket = io(`/${id}`);
+
+
+    var term = new Terminal();
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+
+    window.addEventListener('resize', (e)=>{
+        fitAddon.fit()
+    });
+
+    $(() => {
+        term.open(document.getElementById('terminal'));
+        fitAddon.fit()
+        term.onData(d => {
+            socket.emit('data', d)
+        })
+
+        socket.on('data', data => {
+            term.write(new TextDecoder().decode(new Uint8Array(data)));
+        })
+    })
+
+
+</script>
+
+<style>
+    
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background-color: rgb(0, 0, 0);
+    }
+
+    *::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background-color: rgb(0, 0, 0);
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: rgb(27, 27, 27);
+        outline: transparent;
+        border-radius: 20px;
+    }
+
+    #terminal {
+        min-height: 100%;
+    }
+</style>
+
+<body>
+    <div id="terminal"></div>
+</body>
+
+</html>
