@@ -82,6 +82,8 @@
     const id = window.location.pathname.split('/')[1];
     const socket = io(`/${id}`);
 
+    let downloadNextChunk = false
+    let chunk = []
 
     var term = new Terminal();
     const fitAddon = new FitAddon();
@@ -99,7 +101,22 @@
         })
 
         socket.on('data', data => {
-            term.write(new TextDecoder().decode(new Uint8Array(data)));
+            decoded = new TextDecoder().decode(data)
+            term.write(decoded)
+
+            if (downloadNextChunk) {
+                setTimeout(() => {
+                    if(!downloadNextChunk) return
+                    chunk.pop()
+                    downloadFile(downloadNextChunk, chunk.reduce((a,b) => a + b))
+                    downloadNextChunk = false
+                    chunk = []
+                }, 500);
+                if(!decoded.includes('base64'))
+                    chunk.push(decoded)
+                
+                
+            }
         })
     })
 
@@ -119,19 +136,28 @@
         document.body.appendChild(element);
         element.addEventListener('change', function () {
             getBase64(element.files[0]).then(function (file) {
-                makeRequest('upload', { file: file, filename: element.files[0].name}, function (response) {
-                    console.log(response);
-                });
+                socket.emit('data', `echo '${file}' | base64 --decode > ${element.files[0].name}\n`)
             }, function () {
-                console.log('An unknown client-side error occurred.');
+                console.error('An unknown client-side error occurred.');
             });
         });
         element.click();
         document.body.removeChild(element);
     }
 
-    function makeRequest (url, params, callback) {
-        $.post(window.location.pathname + '/' + url, params, callback)
+    function featureDownload (file) {
+        downloadNextChunk = file
+        socket.emit('data', `cat '${file}' | base64\n`)
+    }
+
+    function downloadFile (name, file) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:application/octet-stream;base64,' + file);
+        element.setAttribute('download', name);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
 
 </script>

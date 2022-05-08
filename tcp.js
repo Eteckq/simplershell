@@ -28,9 +28,12 @@ module.exports = class TCPServer {
             socket.write(data);
           });
         });
-
         socket.on("data", (data) => {
           socket.history.push(data);
+          // $ clear -> clear history
+          if(data.toString("hex") == '1b5b481b5b324a1b5b334a'){
+            socket.history = []
+          }
           namespace.emit("data", data);
         });
 

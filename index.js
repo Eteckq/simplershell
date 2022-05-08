@@ -38,22 +38,16 @@ app.get("/:id", function (req, res) {
   }
 });
 
-app.post("/:id/upload", function (req, res) {
-  let id = req.params.id;
+// app.post("/:id/upload", function (req, res) {
+//   let id = req.params.id;
 
-  if(!tcpServer) return
-  let shell = tcpServer.shells.find((s) => s.id == id)
-  if (shell) {
-    shell.write(
-      Buffer.from(`echo '${req.body.file}' | base64 --decode > ${req.body.filename}\n`)
-    );
-    res.send("ok");
-  } else {
-    res.send("Shell id Not Found");
-  }
-
+//   if(!tcpServer) return
+//   let shell = tcpServer.shells.find((s) => s.id == id)
   
-});
+  
+//   console.log(req.body);
+//   res.send('ok')
+// });
 
 
 // SOCKET IO
