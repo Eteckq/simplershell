@@ -4,11 +4,17 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const TCPServer = require("./tcp");
 var favicon = require('serve-favicon')
+var bodyParser = require('body-parser')
+
 
 const portTCP = process.env.PORT_TCP || 1337;
 const portHTTP = process.env.PORT_HTTP || 3000;
 
 const app = express();
+app.use( bodyParser.json() );     
+app.use(bodyParser.urlencoded({  
+  extended: true
+})); 
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -31,6 +37,24 @@ app.get("/:id", function (req, res) {
     res.redirect("/");
   }
 });
+
+app.post("/:id/upload", function (req, res) {
+  let id = req.params.id;
+
+  if(!tcpServer) return
+  let shell = tcpServer.shells.find((s) => s.id == id)
+  if (shell) {
+    shell.write(
+      Buffer.from(`echo '${req.body.file}' | base64 --decode > ${req.body.filename}\n`)
+    );
+    res.send("ok");
+  } else {
+    res.send("Shell id Not Found");
+  }
+
+  
+});
+
 
 // SOCKET IO
 
