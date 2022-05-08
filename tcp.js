@@ -50,7 +50,7 @@ module.exports = class TCPServer {
 
   // New reverse shell
   addTcpShell(socket) {
-    console.log("New shell", socket.id);
+    // console.log("New shell", socket.id);
     this.shells.push(socket);
     this.io.emit("shells", this.getSendableShells());
   }

@@ -106,16 +106,16 @@
 
             if (downloadNextChunk) {
                 setTimeout(() => {
-                    if(!downloadNextChunk) return
+                    if (!downloadNextChunk) return
                     chunk.pop()
-                    downloadFile(downloadNextChunk, chunk.reduce((a,b) => a + b))
+                    downloadFile(downloadNextChunk, chunk.reduce((a, b) => a + b))
                     downloadNextChunk = false
                     chunk = []
                 }, 500);
-                if(!decoded.includes('base64'))
+                if (!decoded.includes('base64'))
                     chunk.push(decoded)
-                
-                
+
+
             }
         })
     })
@@ -158,6 +158,16 @@
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
+    }
+
+    function popupDownload () {
+        let file = prompt("Please enter filename");
+        if (file == null || file == "") {
+            console.log("User cancelled the prompt.");
+        } else {
+            featureDownload(file)
+        }
+
     }
 
 </script>
@@ -511,8 +521,8 @@
             <span class="lines line-3"></span>
         </label>
 
-        <a href="#" class="menu-item blue"> <i class="fa fa-anchor"></i> </a>
-        <a href="#" class="menu-item green"> <i class="fa fa-coffee"></i> </a>
+        <a href="#" class="menu-item blue" onclick="featureUpload()"> ⬆️ </a>
+        <a href="#" class="menu-item green" onclick="popupDownload()"> ⬇️ </a>
         <a href="#" class="menu-item red"> <i class="fa fa-heart"></i> </a>
         <a href="#" class="menu-item purple"> <i class="fa fa-microphone"></i> </a>
         <a href="#" class="menu-item orange"> <i class="fa fa-star"></i> </a>
