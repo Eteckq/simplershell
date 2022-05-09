@@ -8,7 +8,8 @@ module.exports = class TCPServer {
 
     this.server = net
       .createServer((socket) => {
-        socket.setNoDelay(true);
+        // console.log(socket.remoteAddress);
+        // socket.setNoDelay(true);
         socket.id = uuid.v4();
         socket.history = [];
         let namespace = io.of(socket.id);
