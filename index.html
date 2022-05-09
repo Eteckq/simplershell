@@ -16,7 +16,7 @@
         updateShellList(shells)
     })
     socket.on('state', ({state, ip}) => {
-        console.log(state);
+        // console.log(state);
         $('#switch').prop('disabled', false);
         $('#switch').prop('checked', state);
         if(state)
