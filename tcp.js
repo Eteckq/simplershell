@@ -36,7 +36,7 @@ module.exports = class TCPServer {
               socket.write(Buffer.from(`clear\n`));
             }
           });
-          socket.write(Buffer.from("which python python2 python2\n"));
+          socket.write(Buffer.from("which python python2 python3\n"));
         }, 200);
 
         namespace.on("connection", (user) => {
@@ -44,7 +44,6 @@ module.exports = class TCPServer {
             user.emit("data", h);
           }
           user.on("data", (data) => {
-            console.log(data);
             socket.write(data);
           });
         });
