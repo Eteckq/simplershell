@@ -15,9 +15,14 @@
     socket.on('shells', shells => {
         updateShellList(shells)
     })
-    socket.on('state', state => {
+    socket.on('state', ({state, ip}) => {
+        console.log(state);
         $('#switch').prop('disabled', false);
         $('#switch').prop('checked', state);
+        if(state)
+            $('#ip_status').html(`Listening on ${ip}`)
+        else
+            $('#ip_status').html(`Wait`)
         setLoading(false)
     })
 
@@ -67,6 +72,7 @@
         margin: 0;
         padding: 0;
         font-family: 'Roboto', sans-serif;
+        overflow: hidden;
     }
 
     input[type=checkbox] {
@@ -125,15 +131,14 @@
     }
 
     #top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         height: 200px;
         color: rgb(255, 241, 116);
         font-size: larger;
         margin-top: 50px;
         display: flex;
         justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
 
     #shellList li {
@@ -165,13 +170,13 @@
 </style>
 
 <body>
+    
     <div id="top">
-        <p style="width: 250px; text-align: center">54.36.189.124</p>
+        <p id="ip_status" style="width: 250px; text-align: center">Wait for socket...</p>
         <!-- Toggle -->
         <div>
             <input type="checkbox" id="switch" disabled /><label id="switch-label">On</label>
         </div>
-        <p style="width: 250px; text-align: center;">6666</p>
     </div>
     <!-- Shell list -->
     <ul id="shellList">

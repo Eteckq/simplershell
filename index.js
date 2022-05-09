@@ -9,6 +9,7 @@ var bodyParser = require('body-parser')
 
 const portTCP = process.env.PORT_TCP || 1337;
 const portHTTP = process.env.PORT_HTTP || 3000;
+const serverAddress = process.env.SERVER_ADDRESS || "127.0.0.1";
 
 const app = express();
 app.use( bodyParser.json() );     
@@ -63,12 +64,12 @@ io.on("connection", (socket) => {
         tcpServer.destroy()
         tcpServer = null
       }
-      io.emit("state", !!tcpServer);
+      io.emit("state", {state: !!tcpServer, ip: `${serverAddress}:${portTCP}`});
   })
   if (tcpServer) {
-    socket.emit("state", true);
+    socket.emit("state", {state: true, ip: `${serverAddress}:${tcpServer.server.address().port}`});
     socket.emit("shells", tcpServer.getSendableShells());
-  } else socket.emit("state", false);
+  } else socket.emit("state", {state: false, ip: `Ready on port ${portTCP}`});
 });
 
 httpServer.listen(portHTTP);
