@@ -17,18 +17,18 @@ app.use(
     extended: true,
   })
 );
-app.use(favicon(path.join(__dirname, "favicon.ico")));
+app.use(favicon(path.join(__dirname, "../favicon.ico")));
+
+
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  /* options */
-});
+const io = new Server(httpServer);
 
 var tcpServer = new TCPServer(portTCP, io);
 
 // WEBSITE
 
 app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/index.html"));
+  res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 app.get("/:id", function (req, res) {
@@ -39,8 +39,8 @@ app.get("/:id", function (req, res) {
       res.redirect("/");
       return;
     }
-    if (socket.isTty) res.sendFile(path.join(__dirname, "/shell.html"));
-    else res.sendFile(path.join(__dirname, "/shell-basic.html"));
+    if (socket.isTty) res.sendFile(path.join(__dirname, "../views/shell.html"));
+    else res.sendFile(path.join(__dirname, "../views/shell-basic.html"));
   } else {
     res.redirect("/");
   }
@@ -80,6 +80,6 @@ io.on("connection", (socket) => {
   } else socket.emit("state", { state: false, ip: `Ready on port ${portTCP}` });
 });
 
-httpServer.listen(portHTTP);
-
-console.log(`HTTP: ${portHTTP}`);
+httpServer.listen(portHTTP, () => {
+  console.log(`HTTP: ${portHTTP}`);
+});
